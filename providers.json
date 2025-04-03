@@ -1,0 +1,15 @@
+{
+    "providers": [
+        {
+            "providerName": "amfi",
+            "url": "https://www.amfiindia.com/modules/NavHistoryPeriod",
+            "method": "POST",
+            "parameters": "mfID,scID,fDate,fDate"
+        },
+        {
+            "providerName": "AlhphaVantage",
+            "url": "https://www.alphavantage.co/query?function={function}&symbol={ticker}&apikey={API_KEY}",
+            "method": "GET"
+        }
+    ]
+}
