@@ -5,6 +5,7 @@ client = MongoClient(MONGO_URI)
 db = client['MFComparision']
 mf_collection = db['mutual_funds']
 nav_collection = db['nav_data']
+nifty_collection = db['nifty_data']  # New collection for Nifty data
 
 # Initial MF data
 MF_DATA = [
@@ -15,7 +16,7 @@ MF_DATA = [
 def init_db():
     if mf_collection.count_documents({}) == 0:
         mf_collection.insert_many(MF_DATA)
-    # Create an index on nav_history.date to ensure sorted retrieval
-    nav_collection.create_index([("nav_history.date", 1)])
+    # Create an index on nifty_data.date for efficient retrieval
+    nifty_collection.create_index([("date", 1)])
 
 init_db()

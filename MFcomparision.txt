@@ -1,0 +1,19 @@
+Alpha Vantage : 00MSDYXQM082IY2D Free API key
+
+Flask API to get NAV data
+
+Do the data preproce
+
+use Persistence to store data from MongoDB
+username : rohitpatnaik
+4r6LA0AZgS2VFNNk
+
+connection string : mongodb+srv://<db_username>:<db_password>@mfcomparision.mlka6gh.mongodb.net/?retryWrites=true&w=majority&appName=MFComparision
+
+python -m pip install "pymongo[srv]"==3.12
+
+next step
+
+preprocess the data find the dates of missing data and replace them with NaN
+
+know how to use and implement LSTM to predict NAV.
