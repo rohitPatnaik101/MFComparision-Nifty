@@ -48,9 +48,13 @@ def list_nifty_data(from_date, to_date):
     if not doc or "history" not in doc:
         return pd.DataFrame(columns=["Date", "Close"])
     
+    #change the string into datetime object to correctly match the date
+    from_dt = datetime.strptime(from_date, "%d-%b-%Y")
+    to_dt = datetime.strptime(to_date, "%d-%b-%Y")
+    
     history = [
         entry for entry in doc["history"]
-        if from_date <= entry["date"] <= to_date
+        if from_dt <= datetime.strptime(entry["date"], "%d-%b-%Y") <= to_dt
     ]
     
     df = pd.DataFrame(history, columns=["date", "close"])
@@ -70,14 +74,18 @@ def get_nifty_data(from_date, to_date):
     if not df.empty:
         stored_start = df["Date"].min()
         stored_end = df["Date"].max()
-        if stored_start <= from_date and stored_end >= to_date:
+        stored_start_dt = datetime.strptime(stored_start, "%d-%b-%Y")
+        stored_end_dt = datetime.strptime(stored_end, "%d-%b-%Y")
+        from_dt = datetime.strptime(from_date, "%d-%b-%Y")
+        to_dt = datetime.strptime(to_date, "%d-%b-%Y")
+        if stored_start_dt <= from_dt and stored_end_dt >= to_dt:
             return df, None
         else:
-            if stored_start > from_date:
+            if stored_start_dt > from_dt:
                 start_nifty_data = scrape_nifty_history(from_date, stored_start)
                 if start_nifty_data:
                     add_nifty_data(start_nifty_data)
-            if stored_end < to_date:
+            if stored_end_dt < to_dt:
                 end_nifty_data = scrape_nifty_history(stored_end, to_date)
                 if end_nifty_data:
                     add_nifty_data(end_nifty_data)

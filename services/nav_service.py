@@ -7,7 +7,7 @@ from db import nav_collection, mf_collection
 from .utils import validate_dates
 import os
 
-# Load providers configuration
+# Load providers configuration from the same directory as nav_service.py
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROVIDERS_PATH = os.path.join(BASE_DIR, 'providers.json')
 with open(PROVIDERS_PATH, 'r') as f:
@@ -56,9 +56,12 @@ def list_nav(mf_id, sc_id, from_date, to_date):
     if not doc or "nav_history" not in doc:
         return pd.DataFrame(columns=["date", "nav"])
     
+    from_dt = datetime.strptime(from_date, "%d-%b-%Y")
+    to_dt = datetime.strptime(to_date, "%d-%b-%Y")
+    
     nav_history = [
         entry for entry in doc["nav_history"]
-        if from_date <= entry["date"] <= to_date
+        if from_dt <= datetime.strptime(entry["date"], "%d-%b-%Y") <= to_dt
     ]
     
     df = pd.DataFrame(nav_history, columns=["date", "nav"])
@@ -107,14 +110,18 @@ def get_nav_data(mf_name, from_date, to_date):
     if not df.empty:
         stored_start = df["date"].min()
         stored_end = df["date"].max()
-        if stored_start <= from_date and stored_end >= to_date:
+        stored_start_dt = datetime.strptime(stored_start, "%d-%b-%Y")
+        stored_end_dt = datetime.strptime(stored_end, "%d-%b-%Y")
+        from_dt = datetime.strptime(from_date, "%d-%b-%Y")
+        to_dt = datetime.strptime(to_date, "%d-%b-%Y")
+        if stored_start_dt <= from_dt and stored_end_dt >= to_dt:
             return df, None
         else:
-            if stored_start > from_date:
+            if stored_start_dt > from_dt:
                 start_nav_data = scrape_nav_history(mf_id, sc_id, from_date, stored_start)
                 if start_nav_data:
                     add_nav(mf_id, sc_id, start_nav_data)
-            if stored_end < to_date:
+            if stored_end_dt < to_dt:
                 end_nav_data = scrape_nav_history(mf_id, sc_id, stored_end, to_date)
                 if end_nav_data:
                     add_nav(mf_id, sc_id, end_nav_data)
