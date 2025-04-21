@@ -1,1 +1,0 @@
-MONGO_URI = "mongodb+srv://rohitpatnaik:4r6LA0AZgS2VFNNk@mfcomparision.mlka6gh.mongodb.net/?retryWrites=true&w=majority&appName=MFComparision"

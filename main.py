@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, send_file
 import pandas as pd
 import matplotlib.pyplot as plt
 from db import mf_collection
-from services.nav_service import get_nav_data, describe_nav, get_mf_ids
+from services.nav_service import get_nav_data, describe_nav, get_mf_ids, get_aum_data, predict_nav
 from services.nifty_service import get_nifty_data
 
 app = Flask(__name__)
@@ -101,6 +101,40 @@ def compare_mf_nifty():
         "comparison_data": comparison_data,
         "correlation": correlation,
         "plot": f"/plot/{plot_path}"
+    })
+
+@app.route('/api/get_aum', methods=['POST'])
+def get_aum():
+    data = request.get_json()
+    mf_name = data.get("MFName")
+    year_quarter = data.get("Year_Quarter")
+    
+    if not mf_name or not year_quarter:
+        return jsonify({"error": "MFName and Year_Quarter are required"}), 400
+    
+    aum_data, error = get_aum_data(mf_name, year_quarter)
+    if error:
+        return jsonify({"error": error}), 404 if "not found" in error else 400 if "Invalid" in error else 500
+    
+    return jsonify({"aum_data": aum_data})
+
+@app.route('/api/nav_pred', methods=['POST'])
+def nav_pred():
+    data = request.get_json()
+    mf_name = data.get("MFName")
+    from_date = data.get("FromDate")
+    to_date = data.get("ToDate")
+    
+    if not mf_name or not from_date or not to_date:
+        return jsonify({"error": "MFName, FromDate, and ToDate are required"}), 400
+    
+    predictions, metrics, error = predict_nav(mf_name, from_date, to_date)
+    if error:
+        return jsonify({"error": error}), 404 if "not found" in error else 400 if "Invalid" in error else 500
+    
+    return jsonify({
+        "predictions": predictions,
+        "metrics": metrics
     })
 
 @app.route('/plot/<path:filename>', methods=['GET'])

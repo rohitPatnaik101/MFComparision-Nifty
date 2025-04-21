@@ -5,3 +5,7 @@ beautifulsoup4
 pandas
 yfinance
 matplotlib
+lxml
+statsmodels
+xgboost
+scikit-learn 
